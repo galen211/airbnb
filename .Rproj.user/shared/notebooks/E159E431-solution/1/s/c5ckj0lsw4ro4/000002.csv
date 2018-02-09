@@ -1,0 +1,12 @@
+"0","library(Rserve)"
+"0","printNumber <- function(x) {"
+"0","  x"
+"0","}"
+"0","Rserve()"
+"1","Starting Rserve...
+"
+"1"," "
+"1","""C:\Users\GASIMM~1\DOCUME~1\R\WIN-LI~1\3.4\Rserve\libs\x64\Rserve.exe"" "
+"1"," "
+"1","
+"

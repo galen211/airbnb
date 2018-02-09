@@ -1,0 +1,24 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1517939696819.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3692374375",
+    "id" : "8A940F1C",
+    "lastKnownWriteTime" : 1518121964,
+    "last_content_update" : 1518121964429,
+    "path" : "C:/Users/gasimmons/IdeaProjects/airbnb/lib/solution.Rmd",
+    "project_path" : "lib/solution.Rmd",
+    "properties" : {
+        "chunk_output_type" : "inline",
+        "cursorPosition" : "128,1",
+        "scrollLine" : "121",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
