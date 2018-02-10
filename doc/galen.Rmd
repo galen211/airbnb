@@ -1,0 +1,42 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+## Load the libraries
+```{r}
+packages.used <- c(
+  "xgboost",
+  "readr",
+  "stringr",
+  "caret",
+  "car",
+  "Rserve"
+)
+
+packages.needed=setdiff(packages.used, 
+                        intersect(installed.packages()[,1], 
+                                  packages.used))
+
+# install additional packages
+if(length(packages.needed)>0){
+  install.packages(packages.needed, dependencies = TRUE)
+}
+
+
+for (pkg in as.vector(requiredLibraries)) {
+  library(pkg, character.only = TRUE)
+}
+
+```
+
+## Load the data
+```{r}
+df_train <- read_csv()
+df_test = read_csv()
+
+labels = df_train['country_destination']
+df_train = df_train[-grep('country_destination', colnames(df_train))]
+
+```
+
