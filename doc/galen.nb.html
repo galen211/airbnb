@@ -176,52 +176,282 @@ $(document).ready(function () {
 <h2>Load the libraries</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGFja2FnZXMudXNlZCA8LSBjKFxuICBcInhnYm9vc3RcIixcbiAgXCJyZWFkclwiLFxuICBcInN0cmluZ3JcIixcbiAgXCJjYXJldFwiLFxuICBcImNhclwiLFxuICBcIlJzZXJ2ZVwiXG4pXG5cbnBhY2thZ2VzLm5lZWRlZD1zZXRkaWZmKHBhY2thZ2VzLnVzZWQsIFxuICAgICAgICAgICAgICAgICAgICAgICAgaW50ZXJzZWN0KGluc3RhbGxlZC5wYWNrYWdlcygpWywxXSwgXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcGFja2FnZXMudXNlZCkpXG5cbiMgaW5zdGFsbCBhZGRpdGlvbmFsIHBhY2thZ2VzXG5pZihsZW5ndGgocGFja2FnZXMubmVlZGVkKT4wKXtcbiAgaW5zdGFsbC5wYWNrYWdlcyhwYWNrYWdlcy5uZWVkZWQsIGRlcGVuZGVuY2llcyA9IFRSVUUpXG59XG5cblxuZm9yIChwa2cgaW4gYXMudmVjdG9yKHJlcXVpcmVkTGlicmFyaWVzKSkge1xuICBsaWJyYXJ5KHBrZywgY2hhcmFjdGVyLm9ubHkgPSBUUlVFKVxufVxuXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGFja2FnZXMudXNlZCA8LSBjKFxuICBcInRpZHlyXCIsXG4gIFwidGliYmxlXCIsXG4gIFwiZHBseXJcIixcbiAgXCJyZWFkclwiLFxuICBcIlF1YW5kbFwiLFxuICBcInN0cmluZ3JcIlxuKVxucGFja2FnZXMubmVlZGVkPXNldGRpZmYocGFja2FnZXMudXNlZCwgXG4gICAgICAgICAgICAgICAgICAgICAgICBpbnRlcnNlY3QoaW5zdGFsbGVkLnBhY2thZ2VzKClbLDFdLCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBwYWNrYWdlcy51c2VkKSlcbiMgaW5zdGFsbCBhZGRpdGlvbmFsIHBhY2thZ2VzXG5pZihsZW5ndGgocGFja2FnZXMubmVlZGVkKT4wKXtcbiAgaW5zdGFsbC5wYWNrYWdlcyhwYWNrYWdlcy5uZWVkZWQsIGRlcGVuZGVuY2llcyA9IFRSVUUpXG59XG5mb3IgKHBrZyBpbiBhcy52ZWN0b3IocGFja2FnZXMudXNlZCkpIHtcbiAgbGlicmFyeShwa2csIGNoYXJhY3Rlci5vbmx5ID0gVFJVRSlcbn1cbmBgYCJ9 -->
 <pre class="r"><code>packages.used &lt;- c(
-  &quot;xgboost&quot;,
+  &quot;tidyr&quot;,
+  &quot;tibble&quot;,
+  &quot;dplyr&quot;,
   &quot;readr&quot;,
-  &quot;stringr&quot;,
-  &quot;caret&quot;,
-  &quot;car&quot;,
-  &quot;Rserve&quot;
+  &quot;Quandl&quot;,
+  &quot;stringr&quot;
 )
-
 packages.needed=setdiff(packages.used, 
                         intersect(installed.packages()[,1], 
                                   packages.used))
-
 # install additional packages
 if(length(packages.needed)&gt;0){
   install.packages(packages.needed, dependencies = TRUE)
 }
-
-
-for (pkg in as.vector(requiredLibraries)) {
+for (pkg in as.vector(packages.used)) {
   library(pkg, character.only = TRUE)
-}
-</code></pre>
+}</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog4oCYZHBseXLigJlcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOnN0YXRz4oCZOlxuXG4gICAgZmlsdGVyLCBsYWdcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOmJhc2XigJk6XG5cbiAgICBpbnRlcnNlY3QsIHNldGRpZmYsIHNldGVxdWFsLCB1bmlvblxuXG5Mb2FkaW5nIHJlcXVpcmVkIHBhY2thZ2U6IHh0c1xucGFja2FnZSDigJh4dHPigJkgd2FzIGJ1aWx0IHVuZGVyIFIgdmVyc2lvbiAzLjQuM0xvYWRpbmcgcmVxdWlyZWQgcGFja2FnZTogem9vXG5cbkF0dGFjaGluZyBwYWNrYWdlOiDigJh6b2/igJlcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOmJhc2XigJk6XG5cbiAgICBhcy5EYXRlLCBhcy5EYXRlLm51bWVyaWNcblxuXG5BdHRhY2hpbmcgcGFja2FnZTog4oCYeHRz4oCZXG5cblRoZSBmb2xsb3dpbmcgb2JqZWN0cyBhcmUgbWFza2VkIGZyb20g4oCYcGFja2FnZTpkcGx5cuKAmTpcblxuICAgIGZpcnN0LCBsYXN0XG4ifQ== -->
+<pre><code>
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Loading required package: xts
+package ‘xts’ was built under R version 3.4.3Loading required package: zoo
+
+Attaching package: ‘zoo’
+
+The following objects are masked from ‘package:base’:
+
+    as.Date, as.Date.numeric
+
+
+Attaching package: ‘xts’
+
+The following objects are masked from ‘package:dplyr’:
+
+    first, last</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
 <div id="load-the-data" class="section level2">
 <h2>Load the data</h2>
+<p>Subset a sample</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGZfdHJhaW4gPC0gcmVhZF9jc3YoKVxuZGZfdGVzdCA9IHJlYWRfY3N2KClcblxubGFiZWxzID0gZGZfdHJhaW5bJ2NvdW50cnlfZGVzdGluYXRpb24nXVxuZGZfdHJhaW4gPSBkZl90cmFpblstZ3JlcCgnY291bnRyeV9kZXN0aW5hdGlvbicsIGNvbG5hbWVzKGRmX3RyYWluKSldXG5cbmBgYCJ9 -->
-<pre class="r"><code>df_train &lt;- read_csv()
-df_test = read_csv()
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudHJhaW4gPC0gcmVhZF9jc3YoZmlsZSA9IFwiLi4vZGF0YS90cmFpbi5jc3ZcIilcbmBgYCJ9 -->
+<pre class="r"><code>train &lt;- read_csv(file = &quot;../data/train.csv&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUGFyc2VkIHdpdGggY29sdW1uIHNwZWNpZmljYXRpb246XG5jb2xzKFxuICAuZGVmYXVsdCA9IGNvbF9jaGFyYWN0ZXIoKSxcbiAgaWQgPSBjb2xfaW50ZWdlcigpLFxuICBsb2dfcHJpY2UgPSBjb2xfZG91YmxlKCksXG4gIGFjY29tbW9kYXRlcyA9IGNvbF9pbnRlZ2VyKCksXG4gIGJhdGhyb29tcyA9IGNvbF9kb3VibGUoKSxcbiAgZmlyc3RfcmV2aWV3ID0gY29sX2RhdGUoZm9ybWF0ID0gXCJcIiksXG4gIGhvc3Rfc2luY2UgPSBjb2xfZGF0ZShmb3JtYXQgPSBcIlwiKSxcbiAgbGFzdF9yZXZpZXcgPSBjb2xfZGF0ZShmb3JtYXQgPSBcIlwiKSxcbiAgbGF0aXR1ZGUgPSBjb2xfZG91YmxlKCksXG4gIGxvbmdpdHVkZSA9IGNvbF9kb3VibGUoKSxcbiAgbnVtYmVyX29mX3Jldmlld3MgPSBjb2xfaW50ZWdlcigpLFxuICByZXZpZXdfc2NvcmVzX3JhdGluZyA9IGNvbF9kb3VibGUoKSxcbiAgYmVkcm9vbXMgPSBjb2xfZG91YmxlKCksXG4gIGJlZHMgPSBjb2xfZG91YmxlKClcbilcblNlZSBzcGVjKC4uLikgZm9yIGZ1bGwgY29sdW1uIHNwZWNpZmljYXRpb25zLlxuIn0= -->
+<pre><code>Parsed with column specification:
+cols(
+  .default = col_character(),
+  id = col_integer(),
+  log_price = col_double(),
+  accommodates = col_integer(),
+  bathrooms = col_double(),
+  first_review = col_date(format = &quot;&quot;),
+  host_since = col_date(format = &quot;&quot;),
+  last_review = col_date(format = &quot;&quot;),
+  latitude = col_double(),
+  longitude = col_double(),
+  number_of_reviews = col_integer(),
+  review_scores_rating = col_double(),
+  bedrooms = col_double(),
+  beds = col_double()
+)
+See spec(...) for full column specifications.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGVzdCA8LSByZWFkX2NzdihmaWxlID0gXCIuLi9kYXRhL3Rlc3QuY3N2XCIpXG5gYGAifQ== -->
+<pre class="r"><code>test &lt;- read_csv(file = &quot;../data/test.csv&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUGFyc2VkIHdpdGggY29sdW1uIHNwZWNpZmljYXRpb246XG5jb2xzKFxuICAuZGVmYXVsdCA9IGNvbF9jaGFyYWN0ZXIoKSxcbiAgaWQgPSBjb2xfaW50ZWdlcigpLFxuICBhY2NvbW1vZGF0ZXMgPSBjb2xfaW50ZWdlcigpLFxuICBiYXRocm9vbXMgPSBjb2xfZG91YmxlKCksXG4gIGZpcnN0X3JldmlldyA9IGNvbF9kYXRlKGZvcm1hdCA9IFwiXCIpLFxuICBob3N0X3NpbmNlID0gY29sX2RhdGUoZm9ybWF0ID0gXCJcIiksXG4gIGxhc3RfcmV2aWV3ID0gY29sX2RhdGUoZm9ybWF0ID0gXCJcIiksXG4gIGxhdGl0dWRlID0gY29sX2RvdWJsZSgpLFxuICBsb25naXR1ZGUgPSBjb2xfZG91YmxlKCksXG4gIG51bWJlcl9vZl9yZXZpZXdzID0gY29sX2ludGVnZXIoKSxcbiAgcmV2aWV3X3Njb3Jlc19yYXRpbmcgPSBjb2xfZG91YmxlKCksXG4gIGJlZHJvb21zID0gY29sX2RvdWJsZSgpLFxuICBiZWRzID0gY29sX2RvdWJsZSgpXG4pXG5TZWUgc3BlYyguLi4pIGZvciBmdWxsIGNvbHVtbiBzcGVjaWZpY2F0aW9ucy5cbiJ9 -->
+<pre><code>Parsed with column specification:
+cols(
+  .default = col_character(),
+  id = col_integer(),
+  accommodates = col_integer(),
+  bathrooms = col_double(),
+  first_review = col_date(format = &quot;&quot;),
+  host_since = col_date(format = &quot;&quot;),
+  last_review = col_date(format = &quot;&quot;),
+  latitude = col_double(),
+  longitude = col_double(),
+  number_of_reviews = col_integer(),
+  review_scores_rating = col_double(),
+  bedrooms = col_double(),
+  beds = col_double()
+)
+See spec(...) for full column specifications.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="bind-the-train-and-test-data-for-feature-extraction" class="section level2">
+<h2>Bind the train and test data for feature extraction</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWFzdGVyIDwtIHRyYWluW2MoMSwgMzoyOSldICU+JVxuICBiaW5kX3Jvd3ModGVzdClcbiAgXG4gIFxuYGBgIn0= -->
+<pre class="r"><code>master &lt;- train[c(1, 3:29)] %&gt;%
+  bind_rows(test)
+  
+  </code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="get-just-id-and-amenities" class="section level2">
+<h2>Get just id and amenities</h2>
+<p>Separate the amenities from the training data and convert the amenities text into a list</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYW1lbml0aWVzIDwtIG1hc3RlciAlPiUgXG4gIHNlbGVjdChpZCwgYW1lbml0aWVzKSAlPiVcbiAgbXV0YXRlKGFtZW5pdGllcyA9IHN0cl90b19sb3dlcihhbWVuaXRpZXMpKSAlPiVcbiAgbXV0YXRlKGFtZW5pdGllcyA9IHN0cl9yZXBsYWNlX2FsbChhbWVuaXRpZXMsXCJbe31cXFwiXVwiLFwiXCIpKSBcbmBgYCJ9 -->
+<pre class="r"><code>amenities &lt;- master %&gt;% 
+  select(id, amenities) %&gt;%
+  mutate(amenities = str_to_lower(amenities)) %&gt;%
+  mutate(amenities = str_replace_all(amenities,&quot;[{}\&quot;]&quot;,&quot;&quot;)) </code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="get-a-unique-list-of-amenities-across-all-listings" class="section level2">
+<h2>Get a unique list of amenities across all listings</h2>
+<p>We can see that there are 131 unique amenities in the training data. Now we have to think about which ones might be most indicative of the price.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucG9zc2libGVfYW1lbml0aWVzIDwtIGFtZW5pdGllcyAlPiUgXG4gIHNlcGFyYXRlX3Jvd3MoYW1lbml0aWVzLCBzZXAgPSBcIixcIikgJT4lXG4gIHNlbGVjdChhbWVuaXRpZXMpICU+JVxuICB1bmlxdWUoKVxuYGBgIn0= -->
+<pre class="r"><code>possible_amenities &lt;- amenities %&gt;% 
+  separate_rows(amenities, sep = &quot;,&quot;) %&gt;%
+  select(amenities) %&gt;%
+  unique()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="quandl-api---home-price-data" class="section level1">
+<h1>Quandl API - Home Price Data</h1>
+<div id="get-zipcodes-into-separate-data-frame-reformatting-zipcode-for-api-query" class="section level2">
+<h2>Get zipcodes into separate data frame, reformatting zipcode for API query</h2>
+<p>We expect neighborhood home values to be closely related to listing price. Therefore, we extract the zipcode from each listing (reformatting to use with Quandl API)</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuemlwY29kZXMgPC0gbWFzdGVyICU+JSBcbiAgc2VsZWN0KGlkLCB6aXBjb2RlKSAlPiVcbiAgbXV0YXRlKHppcGNvZGUgPSBzdHJfZXh0cmFjdCh6aXBjb2RlLCBwYXR0ZXJuID0gXCJbMC05XXs1fVwiKSlcbmNpdGllcyA8LSBtYXN0ZXIgJT4lXG4gIHNlbGVjdChpZCxjaXR5KVxuYGBgIn0= -->
+<pre class="r"><code>zipcodes &lt;- master %&gt;% 
+  select(id, zipcode) %&gt;%
+  mutate(zipcode = str_extract(zipcode, pattern = &quot;[0-9]{5}&quot;))
+cities &lt;- master %&gt;%
+  select(id,city)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="six-unique-cities" class="section level2">
+<h2>Six unique cities</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2l0eV9jb2RlcyA8LSBsaXN0KHggPSAxOmxlbmd0aChjaXRpZXMudW5pcXVlKSwgeSA9IGMoXCJjaXR5XCIsXCJjb2RlXCIpKVxuZm9yKGkgaW4gMTpsZW5ndGgoY2l0aWVzLnVuaXF1ZSkpIHtcbiAgY2l0eV9jb2Rlc1tpXSA8LSBjaXRpZXMudW5pcXVlW2ldXG59XG4jIGNvZGVzIG1hbnVhbGx5IGlucHV0dGVkIHVzaW5nIHF1YW5kbCBmaWxlIGBkYXRhL3F1YW5kbF9jaXRpZXNgXG5jaXR5X2NvZGVzW1sxXV0gPC0gXCIwMDAwMlwiXG5jaXR5X2NvZGVzW1syXV0gPC0gXCIwMDAxMlwiXG5jaXR5X2NvZGVzW1szXV0gPC0gXCIwMDAwOFwiXG5jaXR5X2NvZGVzW1s0XV0gPC0gXCIwMDAwM1wiXG5jaXR5X2NvZGVzW1s1XV0gPC0gXCIwMDAwNFwiXG5jaXR5X2NvZGVzW1s2XV0gPC0gXCIwMDAxMVwiXG5jaXR5X2NvZGVzXG5gYGAifQ== -->
+<pre class="r"><code>city_codes &lt;- list(x = 1:length(cities.unique), y = c(&quot;city&quot;,&quot;code&quot;))
+for(i in 1:length(cities.unique)) {
+  city_codes[i] &lt;- cities.unique[i]
+}
+# codes manually inputted using quandl file `data/quandl_cities`
+city_codes[[1]] &lt;- &quot;00002&quot;
+city_codes[[2]] &lt;- &quot;00012&quot;
+city_codes[[3]] &lt;- &quot;00008&quot;
+city_codes[[4]] &lt;- &quot;00003&quot;
+city_codes[[5]] &lt;- &quot;00004&quot;
+city_codes[[6]] &lt;- &quot;00011&quot;
+city_codes</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiJHhcblsxXSBcIjAwMDAyXCJcblxuJHlcblsxXSBcIjAwMDEyXCJcblxuW1szXV1cblsxXSBcIjAwMDA4XCJcblxuW1s0XV1cblsxXSBcIjAwMDAzXCJcblxuW1s1XV1cblsxXSBcIjAwMDA0XCJcblxuW1s2XV1cblsxXSBcIjAwMDExXCJcbiJ9 -->
+<pre><code>$x
+[1] &quot;00002&quot;
 
-labels = df_train['country_destination']
-df_train = df_train[-grep('country_destination', colnames(df_train))]
+$y
+[1] &quot;00012&quot;
+
+[[3]]
+[1] &quot;00008&quot;
+
+[[4]]
+[1] &quot;00003&quot;
+
+[[5]]
+[1] &quot;00004&quot;
+
+[[6]]
+[1] &quot;00011&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYXBpX2tleSA8LSBRdWFuZGwuYXBpX2tleShcImRXTnR1YkNvR1BBUDZFdEF3SzF4XCIpXG5hcmVhIDwtIFwiWklMTE9XL1pcIiAjIFVzZSB6aXAgY29kZSB0byBzZWFyY2hcbmNvZGUgPC0gXCIxMDAyNlwiXG5pbmRpY2F0b3IgPC0gXCJfWlJJQUhcIiAjIFppbGxvdyByZW50YWwgaW5kZXggKGFsbCBob21lcylcbmRhdGEgPC0gcXVhbmRsLmFwaShwYXRoID0gc3RyX2MoXCJkYXRhc2V0cy9cIixhcmVhLCBjb2RlLCBpbmRpY2F0b3IpLCBodHRwID0gXCJHRVRcIilcbmBgYCJ9 -->
+<pre class="r"><code>api_key &lt;- Quandl.api_key(&quot;dWNtubCoGPAP6EtAwK1x&quot;)
+area &lt;- &quot;ZILLOW/Z&quot; # Use zip code to search
+code &lt;- &quot;10026&quot;
+indicator &lt;- &quot;_ZRIAH&quot; # Zillow rental index (all homes)
+data &lt;- quandl.api(path = str_c(&quot;datasets/&quot;,area, code, indicator), http = &quot;GET&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="query-api" class="section level2">
+<h2>Query API</h2>
+<p>Get the unique zipcodes in our data set</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuemlwY29kZXMudW5pcXVlIDwtIHppcGNvZGVzICU+JVxuICBzZWxlY3QoemlwY29kZSkgJT4lXG4gIGRyb3BfbmEoKSAlPiVcbiAgdW5pcXVlKCkgJT4lXG4gIGFzLm1hdHJpeCgpXG5jaXRpZXMudW5pcXVlIDwtIGNpdGllcyAlPiVcbiAgc2VsZWN0KGNpdHkpICU+JVxuICBkcm9wX25hKCkgJT4lXG4gIHVuaXF1ZSgpIFxuYGBgIn0= -->
+<pre class="r"><code>zipcodes.unique &lt;- zipcodes %&gt;%
+  select(zipcode) %&gt;%
+  drop_na() %&gt;%
+  unique() %&gt;%
+  as.matrix()
+cities.unique &lt;- cities %&gt;%
+  select(city) %&gt;%
+  drop_na() %&gt;%
+  unique() </code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5mb3IoeCBpbiAxOmxlbmd0aCh6aXBjb2Rlcy51bmlxdWUpKSB7IHByaW50KHppcGNvZGVzLnVuaXF1ZVt4XSl9XG5cbmBgYCJ9 -->
+<pre class="r"><code>
+for(x in 1:length(zipcodes.unique)) { print(zipcodes.unique[x])}
 </code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5cbmFyZWEgPC0gXCJaSUxMT1cvWlwiICMgVXNlIHppcCBjb2RlIHRvIHNlYXJjaFxuaW5kaWNhdG9yIDwtIFwiX1pSSUFIXCIgIyBaaWxsb3cgcmVudGFsIGluZGV4IChhbGwgaG9tZXMpXG5cbnJlbnRhbF9wcmljZSA9IG1hdHJpeChucm93ID0gbGVuZ3RoKHppcGNvZGVzLnVuaXF1ZSksIG5jb2wgPSAyKVxuZm9yKGkgaW4gMTogbGVuZ3RoKHppcGNvZGVzLnVuaXF1ZSkpIHtcbiAgemlwIDwtIHppcGNvZGVzLnVuaXF1ZVtpXVxuICBjb2RlIDwtIHN0cl9jKGFyZWEsIHppcCwgaW5kaWNhdG9yKVxuICB0cnlDYXRjaChkYXRhIDwtIFF1YW5kbChjb2RlID0gc3RyX2MoYXJlYSwgemlwLCBpbmRpY2F0b3IpLCByb3dzID0gMSksIGZpbmFsbHkgPSBuZXh0KCkpXG4gIHJlbnRhbF9wcmljZVtpLDFdIDwtIHppcFxuICByZW50YWxfcHJpY2VbaSwyXSA8LSBkYXRhJFZhbHVlXG59XG5cblxuYGBgIn0= -->
+<pre class="r"><code>
+
+area &lt;- &quot;ZILLOW/Z&quot; # Use zip code to search
+indicator &lt;- &quot;_ZRIAH&quot; # Zillow rental index (all homes)
+
+rental_price = matrix(nrow = length(zipcodes.unique), ncol = 2)
+for(i in 1: length(zipcodes.unique)) {
+  zip &lt;- zipcodes.unique[i]
+  code &lt;- str_c(area, zip, indicator)
+  tryCatch(data &lt;- Quandl(code = str_c(area, zip, indicator), rows = 1), finally = next())
+  rental_price[i,1] &lt;- zip
+  rental_price[i,2] &lt;- data$Value
+}
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2l0eSA8LSBcIjEwMDI2XCJcbmFwaV9rZXkgPC0gUXVhbmRsLmFwaV9rZXkoKVxuYXJlYSA8LSBcIlpJTExPVy9aXCIgIyBVc2UgemlwIGNvZGUgdG8gc2VhcmNoXG5pbmRpY2F0b3IgPC0gXCJfWlJJQUhcIiAjIFppbGxvdyByZW50YWwgaW5kZXggKGFsbCBob21lcylcbmNvZGUgPC0gc3RyX2MoYXJlYSwgY2l0eSwgaW5kaWNhdG9yKVxuZGF0YSA8LSBRdWFuZGwoY29kZSA9IHN0cl9jKGFyZWEsIGNpdHksIGluZGljYXRvciksIHJvd3MgPSAxKVxucmVudGFsX3ByaWNlWzEsMl0gPC0gZGF0YSRWYWx1ZVxuYGBgIn0= -->
+<pre class="r"><code>city &lt;- &quot;10026&quot;
+api_key &lt;- Quandl.api_key()
+area &lt;- &quot;ZILLOW/Z&quot; # Use zip code to search
+indicator &lt;- &quot;_ZRIAH&quot; # Zillow rental index (all homes)
+code &lt;- str_c(area, city, indicator)
+data &lt;- Quandl(code = str_c(area, city, indicator), rows = 1)
+rental_price[1,2] &lt;- data$Value</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+</div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKIyMgTG9hZCB0aGUgbGlicmFyaWVzCmBgYHtyfQpwYWNrYWdlcy51c2VkIDwtIGMoCiAgInhnYm9vc3QiLAogICJyZWFkciIsCiAgInN0cmluZ3IiLAogICJjYXJldCIsCiAgImNhciIsCiAgIlJzZXJ2ZSIKKQoKcGFja2FnZXMubmVlZGVkPXNldGRpZmYocGFja2FnZXMudXNlZCwgCiAgICAgICAgICAgICAgICAgICAgICAgIGludGVyc2VjdChpbnN0YWxsZWQucGFja2FnZXMoKVssMV0sIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcGFja2FnZXMudXNlZCkpCgojIGluc3RhbGwgYWRkaXRpb25hbCBwYWNrYWdlcwppZihsZW5ndGgocGFja2FnZXMubmVlZGVkKT4wKXsKICBpbnN0YWxsLnBhY2thZ2VzKHBhY2thZ2VzLm5lZWRlZCwgZGVwZW5kZW5jaWVzID0gVFJVRSkKfQoKCmZvciAocGtnIGluIGFzLnZlY3RvcihyZXF1aXJlZExpYnJhcmllcykpIHsKICBsaWJyYXJ5KHBrZywgY2hhcmFjdGVyLm9ubHkgPSBUUlVFKQp9CgpgYGAKCiMjIExvYWQgdGhlIGRhdGEKYGBge3J9CmRmX3RyYWluIDwtIHJlYWRfY3N2KCkKZGZfdGVzdCA9IHJlYWRfY3N2KCkKCmxhYmVscyA9IGRmX3RyYWluWydjb3VudHJ5X2Rlc3RpbmF0aW9uJ10KZGZfdHJhaW4gPSBkZl90cmFpblstZ3JlcCgnY291bnRyeV9kZXN0aW5hdGlvbicsIGNvbG5hbWVzKGRmX3RyYWluKSldCgpgYGAKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKIyMgTG9hZCB0aGUgbGlicmFyaWVzCmBgYHtyfQoKCnBhY2thZ2VzLnVzZWQgPC0gYygKICAidGlkeXIiLAogICJ0aWJibGUiLAogICJkcGx5ciIsCiAgInJlYWRyIiwKICAiUXVhbmRsIiwKICAic3RyaW5nciIKKQoKcGFja2FnZXMubmVlZGVkPXNldGRpZmYocGFja2FnZXMudXNlZCwgCiAgICAgICAgICAgICAgICAgICAgICAgIGludGVyc2VjdChpbnN0YWxsZWQucGFja2FnZXMoKVssMV0sIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgcGFja2FnZXMudXNlZCkpCgojIGluc3RhbGwgYWRkaXRpb25hbCBwYWNrYWdlcwppZihsZW5ndGgocGFja2FnZXMubmVlZGVkKT4wKXsKICBpbnN0YWxsLnBhY2thZ2VzKHBhY2thZ2VzLm5lZWRlZCwgZGVwZW5kZW5jaWVzID0gVFJVRSkKfQoKCmZvciAocGtnIGluIGFzLnZlY3RvcihwYWNrYWdlcy51c2VkKSkgewogIGxpYnJhcnkocGtnLCBjaGFyYWN0ZXIub25seSA9IFRSVUUpCn0KCmBgYAoKIyMgTG9hZCB0aGUgZGF0YQpTdWJzZXQgYSBzYW1wbGUKYGBge3J9CnRyYWluIDwtIHJlYWRfY3N2KGZpbGUgPSAiLi4vZGF0YS90cmFpbi5jc3YiKQp0ZXN0IDwtIHJlYWRfY3N2KGZpbGUgPSAiLi4vZGF0YS90ZXN0LmNzdiIpCmBgYAoKIyMgQmluZCB0aGUgdHJhaW4gYW5kIHRlc3QgZGF0YSBmb3IgZmVhdHVyZSBleHRyYWN0aW9uCmBgYHtyfQptYXN0ZXIgPC0gdHJhaW5bYygxLCAzOjI5KV0gJT4lCiAgYmluZF9yb3dzKHRlc3QpCmBgYAoKCiMjIEdldCBqdXN0IGlkIGFuZCBhbWVuaXRpZXMKU2VwYXJhdGUgdGhlIGFtZW5pdGllcyBmcm9tIHRoZSB0cmFpbmluZyBkYXRhIGFuZCBjb252ZXJ0IHRoZSBhbWVuaXRpZXMgdGV4dCBpbnRvIGEgbGlzdApgYGB7cn0KYW1lbml0aWVzIDwtIG1hc3RlciAlPiUgCiAgc2VsZWN0KGlkLCBhbWVuaXRpZXMpICU+JQogIG11dGF0ZShhbWVuaXRpZXMgPSBzdHJfdG9fbG93ZXIoYW1lbml0aWVzKSkgJT4lCiAgbXV0YXRlKGFtZW5pdGllcyA9IHN0cl9yZXBsYWNlX2FsbChhbWVuaXRpZXMsIlt7fVwiXSIsIiIpKSAKYGBgCgojIyBHZXQgYSB1bmlxdWUgbGlzdCBvZiBhbWVuaXRpZXMgYWNyb3NzIGFsbCBsaXN0aW5ncwpXZSBjYW4gc2VlIHRoYXQgdGhlcmUgYXJlIDEzMSB1bmlxdWUgYW1lbml0aWVzIGluIHRoZSB0cmFpbmluZyBkYXRhLiAgTm93IHdlIGhhdmUgdG8gdGhpbmsgYWJvdXQgd2hpY2ggb25lcyBtaWdodCBiZSBtb3N0IGluZGljYXRpdmUgb2YgdGhlIHByaWNlLgpgYGB7cn0KcG9zc2libGVfYW1lbml0aWVzIDwtIGFtZW5pdGllcyAlPiUgCiAgc2VwYXJhdGVfcm93cyhhbWVuaXRpZXMsIHNlcCA9ICIsIikgJT4lCiAgc2VsZWN0KGFtZW5pdGllcykgJT4lCiAgdW5pcXVlKCkKYGBgCgojIFF1YW5kbCBBUEkgLSBIb21lIFByaWNlIERhdGEKCiMjIEdldCB6aXBjb2RlcyBpbnRvIHNlcGFyYXRlIGRhdGEgZnJhbWUsIHJlZm9ybWF0dGluZyB6aXBjb2RlIGZvciBBUEkgcXVlcnkKV2UgZXhwZWN0IG5laWdoYm9yaG9vZCBob21lIHZhbHVlcyB0byBiZSBjbG9zZWx5IHJlbGF0ZWQgdG8gbGlzdGluZyBwcmljZS4gIFRoZXJlZm9yZSwgd2UgZXh0cmFjdCB0aGUgemlwY29kZSBmcm9tIGVhY2ggbGlzdGluZyAocmVmb3JtYXR0aW5nIHRvIHVzZSB3aXRoIFF1YW5kbCBBUEkpCmBgYHtyfQp6aXBjb2RlcyA8LSBtYXN0ZXIgJT4lIAogIHNlbGVjdChpZCwgemlwY29kZSkgJT4lCiAgbXV0YXRlKHppcGNvZGUgPSBzdHJfZXh0cmFjdCh6aXBjb2RlLCBwYXR0ZXJuID0gIlswLTldezV9IikpCgpjaXRpZXMgPC0gbWFzdGVyICU+JQogIHNlbGVjdChpZCxjaXR5KQpgYGAKCiMjIFNpeCB1bmlxdWUgY2l0aWVzCmBgYHtyfQpjaXR5X2NvZGVzIDwtIGxpc3QoeCA9IDE6bGVuZ3RoKGNpdGllcy51bmlxdWUpLCB5ID0gYygiY2l0eSIsImNvZGUiKSkKZm9yKGkgaW4gMTpsZW5ndGgoY2l0aWVzLnVuaXF1ZSkpIHsKICBjaXR5X2NvZGVzW2ldIDwtIGNpdGllcy51bmlxdWVbaV0KfQoKIyBjb2RlcyBtYW51YWxseSBpbnB1dHRlZCB1c2luZyBxdWFuZGwgZmlsZSBgZGF0YS9xdWFuZGxfY2l0aWVzYApjaXR5X2NvZGVzW1sxXV0gPC0gIjAwMDAyIgpjaXR5X2NvZGVzW1syXV0gPC0gIjAwMDEyIgpjaXR5X2NvZGVzW1szXV0gPC0gIjAwMDA4IgpjaXR5X2NvZGVzW1s0XV0gPC0gIjAwMDAzIgpjaXR5X2NvZGVzW1s1XV0gPC0gIjAwMDA0IgpjaXR5X2NvZGVzW1s2XV0gPC0gIjAwMDExIgoKY2l0eV9jb2RlcwpgYGAKYGBge3J9CgoKYXBpX2tleSA8LSBRdWFuZGwuYXBpX2tleSgiZFdOdHViQ29HUEFQNkV0QXdLMXgiKQphcmVhIDwtICJaSUxMT1cvWiIgIyBVc2UgemlwIGNvZGUgdG8gc2VhcmNoCmNvZGUgPC0gIjEwMDI2IgppbmRpY2F0b3IgPC0gIl9aUklBSCIgIyBaaWxsb3cgcmVudGFsIGluZGV4IChhbGwgaG9tZXMpCgpkYXRhIDwtIHF1YW5kbC5hcGkocGF0aCA9IHN0cl9jKCJkYXRhc2V0cy8iLGFyZWEsIGNvZGUsIGluZGljYXRvciksIGh0dHAgPSAiR0VUIikKCmBgYAoKCgojIyBRdWVyeSBBUEkKR2V0IHRoZSB1bmlxdWUgemlwY29kZXMgaW4gb3VyIGRhdGEgc2V0CmBgYHtyfQp6aXBjb2Rlcy51bmlxdWUgPC0gemlwY29kZXMgJT4lCiAgc2VsZWN0KHppcGNvZGUpICU+JQogIGRyb3BfbmEoKSAlPiUKICB1bmlxdWUoKSAlPiUKICBhcy5tYXRyaXgoKQoKY2l0aWVzLnVuaXF1ZSA8LSBjaXRpZXMgJT4lCiAgc2VsZWN0KGNpdHkpICU+JQogIGRyb3BfbmEoKSAlPiUKICB1bmlxdWUoKSAKYGBgCgpgYGB7cn0KCmZvcih4IGluIDE6bGVuZ3RoKHppcGNvZGVzLnVuaXF1ZSkpIHsgcHJpbnQoemlwY29kZXMudW5pcXVlW3hdKX0KCmBgYAoKYGBge3J9CgoKYXJlYSA8LSAiWklMTE9XL1oiICMgVXNlIHppcCBjb2RlIHRvIHNlYXJjaAppbmRpY2F0b3IgPC0gIl9aUklBSCIgIyBaaWxsb3cgcmVudGFsIGluZGV4IChhbGwgaG9tZXMpCgpyZW50YWxfcHJpY2UgPSBtYXRyaXgobnJvdyA9IGxlbmd0aCh6aXBjb2Rlcy51bmlxdWUpLCBuY29sID0gMikKZm9yKGkgaW4gMTogbGVuZ3RoKHppcGNvZGVzLnVuaXF1ZSkpIHsKICB6aXAgPC0gemlwY29kZXMudW5pcXVlW2ldCiAgY29kZSA8LSBzdHJfYyhhcmVhLCB6aXAsIGluZGljYXRvcikKICB0cnlDYXRjaChkYXRhIDwtIFF1YW5kbChjb2RlID0gc3RyX2MoYXJlYSwgemlwLCBpbmRpY2F0b3IpLCByb3dzID0gMSksIGZpbmFsbHkgPSBuZXh0KCkpCiAgcmVudGFsX3ByaWNlW2ksMV0gPC0gemlwCiAgcmVudGFsX3ByaWNlW2ksMl0gPC0gZGF0YSRWYWx1ZQp9CgoKYGBgCgpgYGB7cn0KCmNpdHkgPC0gIjEwMDI2IgphcGlfa2V5IDwtIFF1YW5kbC5hcGlfa2V5KCkKCmFyZWEgPC0gIlpJTExPVy9aIiAjIFVzZSB6aXAgY29kZSB0byBzZWFyY2gKaW5kaWNhdG9yIDwtICJfWlJJQUgiICMgWmlsbG93IHJlbnRhbCBpbmRleCAoYWxsIGhvbWVzKQpjb2RlIDwtIHN0cl9jKGFyZWEsIGNpdHksIGluZGljYXRvcikKZGF0YSA8LSBRdWFuZGwoY29kZSA9IHN0cl9jKGFyZWEsIGNpdHksIGluZGljYXRvciksIHJvd3MgPSAxKQoKcmVudGFsX3ByaWNlWzEsMl0gPC0gZGF0YSRWYWx1ZQoKYGBgCgo=</div>
 
 
 
