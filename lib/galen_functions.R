@@ -1,4 +1,0 @@
-
-unpackAmenities <- function(characterArray) {
-  
-}

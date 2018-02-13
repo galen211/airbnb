@@ -9,8 +9,9 @@ packages.used <- c(
   "tibble",
   "dplyr",
   "readr",
-  "Quandl",
-  "stringr"
+  "stringr",
+  "zipcode",
+  "geosphere"
 )
 
 packages.needed=setdiff(packages.used, 
@@ -31,7 +32,7 @@ for (pkg in as.vector(packages.used)) {
 
 ## Load the data
 Subset a sample
-```{r warning=FALSE}
+```{r warning=FALSE, echo=FALSE}
 train <- read_csv(file = "../data/train.csv")
 test <- read_csv(file = "../data/test.csv")
 ```
@@ -42,6 +43,25 @@ master <- train[c(1, 3:29)] %>%
   bind_rows(test)
 ```
 
+# Zipcodes - Home Price Data
+
+```{r}
+rentalPrice <- master %>% 
+  select(id, zipcode) %>%
+  mutate(zipcode = str_extract(zipcode, pattern = "[0-9]{5}"))
+```
+
+## Populate rental price index based on longitude / latitude distance
+```{r}
+source("../lib/location_functions.R")
+
+rentalPrice <- rentalPrice %>%
+  mutate()
+```
+
+
+
+# Amenities
 
 ## Get just id and amenities
 Separate the amenities from the training data and convert the amenities text into a list
@@ -61,35 +81,4 @@ possible_amenities <- amenities %>%
   unique()
 ```
 
-# Quandl API - Home Price Data
 
-## Get zipcodes into separate data frame, reformatting zipcode for API query
-We expect neighborhood home values to be closely related to listing price.  Therefore, we extract the zipcode from each listing (reformatting to use with Quandl API)
-```{r}
-zipcodes <- master %>% 
-  select(id, zipcode) %>%
-  mutate(zipcode = str_extract(zipcode, pattern = "[0-9]{5}"))
-```
-
-## Get Zillow data
-Get the unique zipcodes in our data set
-```{r}
-zipcodes.unique <- zipcodes %>%
-  select(zipcode) %>%
-  drop_na() %>%
-  unique()
-
-zillowRentalIndex <- read_csv("../data/Zip_MedianRentalPrice_AllHomes.csv", 
-                                col_types = cols(RegionName = col_character()))
-
-zillowRentalIndex <- zillowRentalIndex %>%
-  rename(rentalindex = `2017-12`) %>%
-  rename(zipcode = RegionName)
-```
-
-## Join zillow data with our zipcodes
-```{r}
-rentalIndexByZip <- zillowRentalIndex %>%
-  select(zipcode, rentalindex) %>%
-  right_join(zipcodes.unique, by = c("zipcode" = "zipcode"))
-```
