@@ -2,6 +2,13 @@
 title: "R Notebook"
 output: html_notebook
 ---
+
+## Setup notebook execution
+```{r setup}
+knitr::opts_knit$set(root.dir = normalizePath("..")) 
+```
+
+
 ## Load the libraries
 ```{r}
 packages.used <- c(
@@ -53,13 +60,13 @@ rentalPrice <- master %>%
 
 ## Populate rental price index based on longitude / latitude distance
 ```{r}
-source("../lib/location_functions.R")
+source("lib/location_functions.R")
 
-rentalPrice <- rentalPrice %>%
-  mutate()
+rentalIndex <- importZillowData()
+
+ind <- getRentalIndex(as.vector("10026"))
+print(ind)
 ```
-
-
 
 # Amenities
 
@@ -79,6 +86,10 @@ possible_amenities <- amenities %>%
   separate_rows(amenities, sep = ",") %>%
   select(amenities) %>%
   unique()
+```
+
+```{r}
+
 ```
 
 
