@@ -3,7 +3,7 @@ data(zipcode)
 
 # generate the rental price index from Zillow data
 importZillowData <- function() {
-  zillow_file <- file.path("data/Zip_MedianRentalPrice_AllHomes.csv")
+  zillow_file <- file.path("../data/Zip_MedianRentalPrice_AllHomes.csv")
   
   rentalIndex <- read_csv(file = zillow_file, 
                           col_types = cols(RegionName = col_character()))
@@ -20,6 +20,8 @@ importZillowData <- function() {
 }
 
 rentalIndex <- importZillowData()
+
+
 
 # get the rental index for a given zip
 getRentalIndex <- function(zipcodes) {
@@ -38,28 +40,10 @@ getRentalIndex <- function(zipcodes) {
 # get the coordinates of the zipcode
 getCoordFromZip <- function(charZip) {
   coord <- zipcode %>%
-    filter(zip %in% charZip) %>%
+    filter(zip == charZip) %>%
     select(longitude, latitude) %>%
     as.matrix()
   return(coord)
-}
-
-# get the state based on the zipcode
-getStateFromZip <- function(charZip) {
-  state <- zipcode %>%
-    filter(zip %in% charZip) %>%
-    select(state) %>%
-    as.character()
-  return(state)
-}
- 
-# get the city based on the zipcode
-getCityFromZip <- function(charZip) {
-  city <- zipcode %>%
-    filter(zip %in% charZip) %>%
-    select(city) %>%
-    as.character()
-  return(city)
 }
 
 # get the zipcode closest to the query zipcode for which we have 
@@ -67,13 +51,8 @@ getCityFromZip <- function(charZip) {
 getNearestZip <- function(charZip) {
   zipWithData <- rentalIndex %>%
     select(zip)
-
-  query_city <- getCityFromZip(charZip)
-
-  query_space <- zipcode %>%
-    filter(city %in% query_city & zip %in% zipWithData$zip)
   
-  query_points <- query_space %>%
+  query_points <- zipcode %>%
     select(longitude, latitude) %>%
     as.matrix()
   

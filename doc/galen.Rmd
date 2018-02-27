@@ -58,13 +58,36 @@ rentalPrice <- master %>%
   mutate(zipcode = str_extract(zipcode, pattern = "[0-9]{5}"))
 ```
 
+```{r}
+unique_zipcodes <- rentalPrice %>%
+  select(zipcode) %>%
+  unique() %>%
+  as.vector()
+```
+
+```{r}
+source("../lib/location_functions.R")
+```
+
+```{r}
+getCoordFromZip("10027")
+```
+
+```{r}
+query_points <- zipcode %>%
+    subset(zip %in% unique_zipcodes) %>%
+    select(longitude, latitude) %>%
+    as.matrix()
+```
+
+```{r}
+df <- zipcode[]
+```
+
+
 ## Populate rental price index based on longitude / latitude distance
 ```{r}
-source("lib/location_functions.R")
-
-rentalIndex <- importZillowData()
-
-ind <- getRentalIndex(as.vector("10026"))
+ind <- getRentalIndex("10026")
 print(ind)
 ```
 
