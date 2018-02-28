@@ -18,7 +18,8 @@ packages.used <- c(
   "readr",
   "stringr",
   "zipcode",
-  "geosphere"
+  "geosphere",
+  "sparklyr"
 )
 
 packages.needed=setdiff(packages.used, 
@@ -37,11 +38,25 @@ for (pkg in as.vector(packages.used)) {
 
 ```
 
+
+```{r}
+sc <- spark_connect(master = "local")
+train <- spark_read_csv(header = TRUE, delimiter = ",", path = "data/train.csv")
+test <- spark_read_csv(header = TRUE, delimiter = ",", path = "data/train.csv")
+```
+
+```{r}
+
+train <- ft_string_indexer()
+
+```
+
+
 ## Load the data
 Subset a sample
-```{r warning=FALSE, echo=FALSE}
-train <- read_csv(file = "../data/train.csv")
-test <- read_csv(file = "../data/test.csv")
+```{r echo=FALSE, message=FALSE}
+train <- read_csv(file = "data/train.csv")
+test <- read_csv(file = "data/test.csv")
 ```
 
 ## Bind the train and test data for feature extraction
@@ -66,12 +81,60 @@ unique_zipcodes <- rentalPrice %>%
 ```
 
 ```{r}
-source("../lib/location_functions.R")
+source("lib/location_functions.R")
 ```
 
 ```{r}
-getCoordFromZip("10027")
+n <- length(unique_zipcodes$zipcode)
+m <- matrix(0, nrow = n, ncol = 1)
+for (i in 1:n) {
+  z <- unique_zipcodes$zipcode[i]
+  m[i,1] <- getRentalIndex(z)
+}
 ```
+
+
+```{r}
+
+
+
+filledRentalIndex <- unique_zipcodes %>%
+  mutate(rentalIndex = getRentalIndex(zipcode))
+
+```
+
+```{r}
+query_points <- zipcode %>%
+    select(longitude, latitude) %>%
+    as.matrix()
+```
+
+```{r}
+charZip<-"10026"
+zipWithData <- rentalIndex %>%
+    select(zip)
+  
+  query_city <- getCityFromZip(charZip)
+  
+  query_points <- zipcode %>%
+    filter(city == query_city) %>%
+    select(longitude, latitude) %>%
+    as.matrix()
+  
+  target_coord <- getCoordFromZip(charZip)
+  m <- distm(target_coord, query_points)
+  i <- which.min(m)
+```
+
+```{r}
+rentalIndex[zip=="10026",]
+```
+
+
+```{r}
+ind <- getRentalIndex("10040")
+```
+
 
 ```{r}
 query_points <- zipcode %>%
